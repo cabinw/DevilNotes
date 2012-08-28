@@ -1,0 +1,12 @@
+{% extends 'wrapper.html' %}
+
+{% block content %}
+
+<h2>OS.environ</h2>
+<table>
+{% for item in items %}
+	<tr><td>{{ item }}</td><td>{{items[item]}}</td></tr>  
+{% end %}
+</table>
+
+{% end %}
