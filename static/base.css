@@ -22,7 +22,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 
 /* Base */
 a {
-	color: #aaa;
+	color: #6699A1;
 	text-decoration: none;
 }
 h1 {
@@ -38,6 +38,9 @@ li {
 }
 
 /* General */
+body {
+	background: url('images/bg.png');
+}
 .left {
 	float: left;
 }
@@ -55,8 +58,13 @@ li {
 
 /* Wrapper */
 #wrapper {
-	width: 960px;
-	margin: 30px auto 45px;
+	width: 900px;
+	padding: 30px 30px 45px;
+	margin: 0 auto;
+	background: #fefefe;
+	-moz-box-shadow: 0px 0px 5px #ddd;
+	-webkit-box-shadow: 0px 0px 5px #ddd;
+	box-shadow: 0px 0px 5px #ddd;
 }
 #content {
 	margin: 30px 0 45px;
@@ -65,6 +73,12 @@ li {
 /* Detail */
 #header .title h1 {
 	float: left;
+}
+#header .title h1 a {
+	color: #aaa;
+}
+#header .title h1:first-letter {
+	color: #6699A1;
 }
 #header .title .desc {
 	float: right;
@@ -89,6 +103,9 @@ li {
 
 #footer p {
 	line-height: 24px;
+}
+#footer a {
+	color: #aaa;
 }
 
 /* END */
