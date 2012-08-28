@@ -46,7 +46,8 @@ class blog:
                     for j in html:
                         count += 1
                         if count == 1:
-                            title += '<a href="p/' + id + '">' + j + '</a>'
+                            #title += '<a href="p/' + id + '">' + j + '</a>'
+                            title += j
                         elif count > 2:
                             content += j
                     content = md.html(unicode(content, 'utf-8'), extensions=md.EXT_STRIKETHROUGH)

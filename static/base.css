@@ -69,12 +69,13 @@ li {
 #header .title .desc {
 	float: right;
 	font-size: 40px;
-	color: #efefef;
+	color: #fafafa;
 }
 
 #content .article .title {
 	margin: 0 0 18px 0;
 	font-size: 24px;
+	color: #888;
 }
 #content .article .content {
 }

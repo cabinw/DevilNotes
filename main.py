@@ -29,7 +29,7 @@ class Application(tornado.web.Application):
             cookie_secret = "",
             autoescape = None,
             title = u"雨萌星",
-            desc = u"Code is my unique faith.",
+            desc = u"code is my unique faith.",
             folder_blog = './blog/',
             url = 'http://rainmoe.herokuapp.com/'
         )
