@@ -1,3 +1,4 @@
 tornado==2.3
 Pygments==1.5
 PyRSS2Gen==1.0.0
+misaka==1.0.2

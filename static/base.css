@@ -21,17 +21,45 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 }
 
 /* Base */
+a {
+	color: #aaa;
+	text-decoration: none;
+}
 h1 {
 	font-size: 40px;
+}
+ul {
+	margin: 18px 0;
+	list-style: upper-roman;
+}
+li {
+	margin-left: 36px;
+	padding: 4px 0;
+}
+
+/* General */
+.left {
+	float: left;
+}
+.right {
+	float: right;
+}
+.content p:first-letter{
+	font-size:24px;
+	padding-right:4px;
+}
+.content p {
+	padding: 12px 0 0;
+	line-height: 20px;
 }
 
 /* Wrapper */
 #wrapper {
 	width: 960px;
-	margin: 30px auto;
+	margin: 30px auto 45px;
 }
 #content {
-	margin: 30px 0 30px 0;
+	margin: 30px 0 45px;
 }
 
 /* Detail */
@@ -56,6 +84,10 @@ h1 {
 	font-size: 24px;
 }
 #article .content {
+}
+
+#footer p {
+	line-height: 24px;
 }
 
 /* END */

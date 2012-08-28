@@ -18,12 +18,17 @@
 <div id="content">
 	{% block content %}{% end %}
 </div>
-<div id="footer">
-	<p>Time costs: {{info['intv']}}. Current timestamp: {{info['times']}}.</p>
+<div id="footer" class="clearfix">
+	<p>DevilNotes, created by <a href="http://www.rainmoe.com/">邪罗刹</a>. </p>
+	<p>Repo on Github <a href="https://github.com/Evlos/DevilNotes" target="_blank">https://github.com/Evlos/DevilNotes</a>.</p>
+	<p>Supported by <a href="http://www.python.org/" target="_blank">Python</a>, <a href="http://www.tornadoweb.org/" target="_blank">Tornado</a>, <a href="http://pygments.org/" target="_blank">Pygments</a>, <a href="http://www.dalkescientific.com/Python/PyRSS2Gen.html" target="_blank">PyRSS2Gen</a>, <a href="http://misaka.61924.nl/" target="_blank">Misaka</a> & <a href="http://www.heroku.com/" target="_blank">Heroku</a>.</p>
 	<br />
-	<p>DevilNotes v1.0a created by <a href="http://www.rainmoe.com/">邪罗刹</a>. </p>
-	<p>Supported by <a href="http://www.python.org/" target="_blank">Python</a>, <a href="http://www.tornadoweb.org/" target="_blank">Tornado</a>, <a href="http://pygments.org/" target="_blank">Pygments</a> & <a href="http://www.heroku.com/" target="_blank">Heroku</a>.</p>
-	<p>Github - <a href="https://github.com/Evlos/DevilNotes" target="_blank">https://github.com/Evlos/DevilNotes</a>.</p>
+	<div class="left">
+		<p>Time costs: {{info['intv']}}. Current GMT timestamp: {{info['times']}}.</p>
+	</div>
+	<div class="right">
+		Version: v1.0a - <a href="#">TOP</a>
+	</div>
 </div>
 </div>
 <!-- Body -->
