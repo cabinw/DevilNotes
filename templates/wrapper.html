@@ -2,8 +2,11 @@
 <head>
 <!-- Head -->
 <title>{{ escape(handler.settings['title']) }} - {{ escape(handler.settings["desc"]) }}</title>
+<link
+rel="alternate" type="application/rss+xml" title="{{ escape(handler.settings['title']) }}" href="{{ escape(handler.settings['url']) }}feed" />
 <link rel="stylesheet" type="text/css" href="{{ static_url('base.css') }}" />
 <script type="text/javascript" src="{{ static_url('js/jquery-1.8.0.min.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/base.js') }}"></script>
 <!-- Head -->
 </head>
 <body>
@@ -22,7 +25,7 @@
 	<p>DevilNotes, created by <a href="http://www.rainmoe.com/">邪罗刹</a>. </p>
 	<p>Repo on Github: <a href="https://github.com/Evlos/DevilNotes" target="_blank">https://github.com/Evlos/DevilNotes</a>.</p>
 	<p>Supported by <a href="http://www.python.org/" target="_blank">Python</a>, <a href="http://www.tornadoweb.org/" target="_blank">Tornado</a>, <a href="http://pygments.org/" target="_blank">Pygments</a>, <a href="http://www.dalkescientific.com/Python/PyRSS2Gen.html" target="_blank">PyRSS2Gen</a>, <a href="http://misaka.61924.nl/" target="_blank">Misaka</a> & <a href="http://www.heroku.com/" target="_blank">Heroku</a>.</p>
-	<p>RSS url: <a href="{{ escape(handler.settings["url"]) }}rss">{{ escape(handler.settings["url"]) }}rss</a></p>
+	<p>RSS url: <a href="{{ escape(handler.settings["url"]) }}feed">{{ escape(handler.settings["url"]) }}feed</a>, subscribe via <a href="https://www.google.com/reader/view/feed/{{ escape(handler.settings["url"]) }}feed" target="_blank">Google Reader</a></p>
 	<br />
 	<div class="left">
 		<p>Time costs: {{ info['intv'] }}. Current GMT timestamp: {{ info['times'] }}.</p>
@@ -33,5 +36,6 @@
 </div>
 </div>
 <!-- Body -->
+{% module Template("count.html") %}
 </body>
 </html>

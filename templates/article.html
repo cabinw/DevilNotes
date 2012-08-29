@@ -3,8 +3,13 @@
 {% block content %}
 
 <div id="article">
-	<div class="title">
-		{{item['title']}}
+	<div class="top clearfix">
+		<div class="title left">
+			{{ item['title'] }}
+		</div>
+		<div class="info right">
+			Date: {{ timesFormat(item['id']) }}
+		</div>
 	</div>
 	<div class="content">
 		{{item['content']}}

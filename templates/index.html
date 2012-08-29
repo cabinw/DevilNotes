@@ -5,14 +5,42 @@
 <div id="articles">
 	{% for item in items %}
 		<div class="article">
-			<div class="title">
-				{{item['title']}}
+			<div class="top clearfix">
+				<div class="title left">
+					{{ item['title'] }}
+				</div>
+				<div class="info right">
+					Date: {{ timesFormat(item['id']) }}
+				</div>
 			</div>
 			<div class="content">
-				{{item['content']}}
+				{{ item['content'] }}
 			</div>
 		</div>
 	{% end %}
+</div>
+
+<div id="paged" class="clearfix">
+	{% if page > 1 %}
+	<div class="left">
+		<a href="/page/{{ minus(page) }}"><- Prev</a>
+	</div>
+	{% end %}
+	{% if isPagedEnough %}
+	<div class="right">
+		<a href="/page/{{ plus(page) }}">Next -></a>
+	</div>
+	{% end %}
+</div>
+
+<div id="links">
+	<ul class="clearfix">
+	{% for link in links %}
+		<li class="left">
+			<a href="{{ link['url'] }}" target="_blank">{{ link['name'] }}</a>
+		</li>
+	{% end %}
+	<ul>
 </div>
 
 {% end %}

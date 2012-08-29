@@ -10,17 +10,17 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 
-import PyRSS2Gen
-
 from blog import blog
 
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
             (r"/", pIndex),
-            (r"/os[/]*", pOS),
+            (r"/page/(\d+)[/]*", pIndex),
+            #(r"/os[/]*", pOS),
             (r"/p/(\d+)[/]*", pArticle),
             (r"/rss[/]*", pRSS),
+            (r"/feed[/]*", pRSS),
         ]
         settings = dict(
             template_path = os.path.join("templates"),
@@ -31,9 +31,11 @@ class Application(tornado.web.Application):
             title = u"雨萌星",
             desc = u"code is my unique faith.",
             folder_blog = './blog/',
-            url = 'http://rainmoe.herokuapp.com/'
+            url = 'http://www.rainmoe.com/',
+            paged = 3,
         )
         tornado.web.Application.__init__(self, handlers, **settings)
+        tornado.web.ErrorHandler = pError
 
 class pBase(tornado.web.RequestHandler):
     def time2ago(self, t):
@@ -47,21 +49,54 @@ class pBase(tornado.web.RequestHandler):
         else:
             return str(int(intv)) + 's ago'
             
+    def getTimes(self):
+        return int(time.mktime(time.gmtime()))
+    
+    def plus(self, num):
+        return int(num) + 1
+    
+    def minus(self, num):
+        return int(num) - 1
+    
+    def timesFormat(self, times):
+        return datetime.datetime.fromtimestamp(float(times)+3600*8)
+
+class pError(pBase):
+    def __init__(self, application, request, status_code):
+        tornado.web.RequestHandler.__init__(self, application, request)
+        self.set_status(status_code)
+    
+    def get_error_html(self, status_code, **kwargs):
+        if (status_code == 404):
+            error = 'Page not found.'
+        elif (status_code == 405):
+            error = 'Temporary not avaliable.'
+        else:
+            error = 'Unexpected problem.'
+        info = {'intv': '-', 'times': self.getTimes()}
+        return self.render_string("error.html", info = info, error = error)
+
 class pIndex(pBase):
-    def get(self):
+    def get(self, page = 1):
         stime = time.clock()
-        items = blog.readIndex(self.application.settings['folder_blog'])
-        intv = str(round((time.clock() - stime)*1000, 5)) + ' ms'
-        info = {'intv': intv, 'times': int(time.mktime(time.gmtime()))}
-        self.render("index.html", items = items, info = info)
+        items = blog.readIndex(self.application.settings, page)
+        intv = str((time.clock() - stime)*1000) + ' ms'
+        info = {'intv': intv, 'times': self.getTimes()}
+        handle = open(self.application.settings['folder_blog'] + 'option/links.txt')
+        links = eval(handle.read())
+        handle.close()
+        self.render("index.html", items = items['index'], info = info, page = page,
+            plus = self.plus, minus = self.minus, isPagedEnough = items['isPagedEnough'],
+            timesFormat = self.timesFormat, links = links
+        )
 
 class pArticle(pBase):
     def get(self, id):
         stime = time.clock()
         item = blog.readArticle(self.application.settings['folder_blog'], id)
-        intv = str(round((time.clock() - stime)*1000, 5)) + ' ms'
-        info = {'intv': intv, 'times': int(time.mktime(time.gmtime()))}
-        self.render("article.html", item = item, info = info)
+        intv = str((time.clock() - stime)*1000) + ' ms'
+        info = {'intv': intv, 'times': self.getTimes()}
+        self.render("article.html", item = item, info = info, timesFormat = self.timesFormat)
 
 class pOS(pBase):
     def get(self):
@@ -69,25 +104,8 @@ class pOS(pBase):
 
 class pRSS(pBase):
     def get(self):
-        articles = blog.readIndex(self.application.settings['folder_blog'])
-        items = []
-        for article in articles:
-            url = self.application.settings['url'] + 'p/' + article['id']
-            items.append(PyRSS2Gen.RSSItem(
-                title = article['title'],
-                link = url,
-                description = article['content'],
-                guid = PyRSS2Gen.Guid(url),
-                pubDate = datetime.datetime.fromtimestamp(float(article['id'])),
-            ))
-        rss = PyRSS2Gen.RSS2(
-            title = self.application.settings['title'],
-            link = self.application.settings['url'],
-            description = self.application.settings['desc'],
-            lastBuildDate = datetime.datetime.now(),
-            items = items
-        ).to_xml()
-        self.render("rss.html", rss = rss)
+        rss = blog.outputRSS(self.application.settings)
+        self.render("data.html", data = rss)
 
 def main():
     tornado.httpserver.HTTPServer(Application()).listen(int(os.environ.get('PORT', 8888)))
