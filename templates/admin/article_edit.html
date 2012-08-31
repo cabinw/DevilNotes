@@ -1,0 +1,27 @@
+{% extends './admin.html' %}
+
+{% block inside %}
+
+<div id="admin">
+	<div class="article_add">
+		<form method="post" action=""><table>
+			<tr>
+				<td class="ar">Title:</td>
+				<td><input type="text" name="title" value="{{ item['title'] }}" /></td>
+			</tr>
+			<tr>
+				<td class="ar">Content:</td>
+				<td><textarea name="content" class="tcontent">{{ item['content'] }}</textarea></td>
+			</tr>
+			<tr>
+				<td>
+					<input type="hidden" name="pid" value="{{ item['id'] }}" />
+					{{ xsrf_form_html() }}
+				</td>
+				<td><input type="submit" value="Update" /></td>
+			</tr>
+		</table></form>
+	</div>
+</div>
+
+{% end %}

@@ -4,34 +4,49 @@
 
 <div id="articles">
 	{% for item in items %}
-		<div class="article">
-			<div class="top clearfix">
-				<div class="title left">
-					{{ item['title'] }}
-				</div>
-				<div class="info right">
-					Date: {{ timesFormat(item['id']) }}
-				</div>
+	<div class="article clearfix">
+		<div class="sidebar left">
+			<div class="info">
+				<ul>
+					<li>{{ timesFormat(item['id']) }}</li>
+					{% if isAdmin %}
+						<li><a href="/admin/edit/{{ item['id'] }}">Article EDIT</a></li>
+						<li><a href="/admin/add">Article ADD</a></li>
+					{% end %}
+				</ul>
 			</div>
-			<div class="content">
+		</div>
+		<div class="content right">
+			<div class="title">
+				<a href="/p/{{ item['id'] }}">{{ item['title'] }}</a>
+			</div>
+			<div class="show">
 				{{ item['content'] }}
 			</div>
 		</div>
+	</div>
 	{% end %}
 </div>
 
-<div id="paged" class="clearfix">
-	{% if page > 1 %}
-	<div class="left">
-		<a href="/page/{{ minus(page) }}"><- Prev</a>
+<!-- {{ isPagedEnough }} {{ page }} -->
+{% if page > 0 %}
+	<div id="paged" class="clearfix">
+		{% if page > 1 %}
+			<div class="left">
+				{% if page == 2 %}
+					<a href="/"><- Prev</a>
+				{% else %}
+					<a href="/page/{{ minus(page) }}"><- Prev</a>
+				{% end %}
+			</div>
+		{% end %}
+		{% if isPagedEnough %}
+			<div class="right">
+				<a href="/page/{{ plus(page) }}">Next -></a>
+			</div>
+		{% end %}
 	</div>
-	{% end %}
-	{% if isPagedEnough %}
-	<div class="right">
-		<a href="/page/{{ plus(page) }}">Next -></a>
-	</div>
-	{% end %}
-</div>
+{% end %}
 
 <div id="links">
 	<ul class="clearfix">

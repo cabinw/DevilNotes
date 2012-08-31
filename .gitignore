@@ -1,3 +1,4 @@
 *.pyc
-git.sh
+tool/git.sh
 blog/
+config.py

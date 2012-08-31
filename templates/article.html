@@ -2,17 +2,25 @@
 
 {% block content %}
 
-<div id="article">
-	<div class="top clearfix">
-		<div class="title left">
-			{{ item['title'] }}
-		</div>
-		<div class="info right">
-			Date: {{ timesFormat(item['id']) }}
+<div id="article" class="clearfix">
+	<div class="sidebar left">
+		<div class="info">
+			<ul>
+				<li>{{ timesFormat(item['id']) }}</li>
+				{% if isAdmin %}
+					<li><a href="/admin/edit/{{ item['id'] }}">Article EDIT</a></li>
+					<li><a href="/admin/add">Article ADD</a></li>
+				{% end %}
+			</ul>
 		</div>
 	</div>
-	<div class="content">
-		{{item['content']}}
+	<div class="content right">
+		<div class="title">
+			<a href="/p/{{ item['id'] }}">{{ item['title'] }}</a>
+		</div>
+		<div class="show">
+			{{ item['content'] }}
+		</div>
 	</div>
 </div>
 

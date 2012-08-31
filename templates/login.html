@@ -1,0 +1,44 @@
+{% extends 'wrapper.html' %}
+
+{% block content %}
+
+<div id="panel" class="clearfix">
+	<div class="left">
+		<ul>
+			<li><a href="/">Back</a></li>
+		</ul>
+	</div>
+	<div class="right">
+
+		<div id="login">
+			{% if not isLogin() %}
+				<form method="post" action=""><table>
+					<tr>
+						<td class="ar">Username:</td>
+						<td><input type="text" name="username" /></td>
+					</tr>
+					<tr>
+						<td class="ar">Password:</td>
+						<td><input type="text" name="passwd" /></td>
+					</tr>
+					<tr>
+						<td>
+							{{ xsrf_form_html() }}
+						</td>
+						<td><input type="submit" value="Login" /></td>
+					</tr>
+				</table></form>
+			{% else %}
+				<table>
+					<tr>
+						<td class="ar">Notice:</td>
+						<td>You are logged in.</td>
+					</tr>
+				</table>
+			{% end %}
+		</div>
+
+	</div>
+</div>
+
+{% end %}

@@ -1,0 +1,22 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import os.path
+
+class config():
+    
+    @staticmethod
+    def dn_config():
+        res = {}
+        
+        res['database'] = 'mysql://example_username:example_password@example_database_url/example_database'
+        res['cookie_secret'] = 'example_secret'
+        res['title'] = u"Example Title"
+        res['description'] = u"example description"
+        res['url'] = 'http://www.example.com/'
+        res['paged'] = 8
+        res['admin_username'] = 'admin'
+        res['admin_password'] = 'password'
+        
+        return res
+        
