@@ -23,7 +23,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 config = config.dn_config()
-engine = sa.create_engine(config['database'] + '?charset=utf8', echo = True)
+engine = sa.create_engine(config['database'] + '?charset=utf8')#, echo = True)
 
 Session = sessionmaker()
 Session.configure(bind=engine)
@@ -206,7 +206,7 @@ class pBase(tornado.web.RequestHandler):
         return int(num) - 1
     
     def timesFormat(self, times):
-        return datetime.datetime.fromtimestamp(float(times)+3600*8)
+        return datetime.datetime.fromtimestamp(float(times)+3600*8).date()
     
     def userCurrent(self):
         user = self.get_secure_cookie("login")
@@ -260,7 +260,7 @@ class pIndex(pBase):
         handle.close()
         self.render("index.html", items = items['index'], info = info, page = int(page),
             plus = self.plus, minus = self.minus, isPagedEnough = items['isPagedEnough'],
-            timesFormat = self.timesFormat, links = links, isAdmin = self.isAdmin()
+            timesFormat = self.timesFormat, links = links, isAdmin = self.isAdmin
         )
 
 class pArticle(pBase):
@@ -270,7 +270,7 @@ class pArticle(pBase):
         intv = str((time.time() - stime)*1000) + ' ms'
         info = {'intv': intv, 'times': self.getTimes()}
         self.render("article.html", item = item, info = info, timesFormat = self.timesFormat,
-            isAdmin = self.isAdmin()
+            isAdmin = self.isAdmin
         )
 
 class pOS(pBase):
@@ -285,15 +285,18 @@ class pRSS(pBase):
 
 class pLogin(pBase):
     def get(self):
-        info = {'intv': 0, 'times': self.getTimes()}
-        self.render("login.html", info = info, isLogin = self.isLogin)
+        if self.isAdmin():
+            self.redirect('/admin/add')
+        else:
+            info = {'intv': 0, 'times': self.getTimes()}
+            self.render("login.html", info = info, isLogin = self.isLogin)
         
     def post(self):
         username = self.get_argument("username")
         passwd = self.get_argument("passwd")
         if self.userAuth(username, passwd):
             self.userCurrentSet(username)
-            self.redirect('/login')
+            self.redirect('/admin/add')
         else:
             self.redirect('/login')
 

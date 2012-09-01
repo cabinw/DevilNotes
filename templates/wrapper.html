@@ -18,11 +18,25 @@ rel="alternate" type="application/rss+xml" title="{{ escape(handler.settings['ti
 		<span class="desc">#{{ escape(handler.settings["desc"]) }}</span>
 	</div>
 </div>
-<div id="content">
-	{% block content %}{% end %}
+<div id="main" class="clearfix">
+	<div id="sidebar" class="left">
+		<div class="inside">
+			<ul>
+				<li>Welcome, human or robot. I am 邪罗刹.</li>
+			</ul>
+		</div>
+		<div class="inside">
+			<ul>	
+				<li>DevilNotes is a open source blog programme written in Python and created by <a href="http://www.rainmoe.com" rel="nofollow">邪罗刹</a>.</li>
+			</ul>
+		</div>
+	</div>
+	<div id="content" class="right">
+		{% block content %}{% end %}
+	</div>
 </div>
 <div id="footer" class="clearfix">
-	<p>DevilNotes, created by <a href="http://www.rainmoe.com/">邪罗刹</a>. </p>
+	<p>DevilNotes, created by <a href="http://www.rainmoe.com/" rel="nofollow">邪罗刹</a>. </p>
 	<p>Repo on Github: <a href="https://github.com/Evlos/DevilNotes" target="_blank">https://github.com/Evlos/DevilNotes</a>.</p>
 	<p>Supported by <a href="http://www.python.org/" target="_blank">Python</a>, <a href="http://www.tornadoweb.org/" target="_blank">Tornado</a>, <a href="http://pygments.org/" target="_blank">Pygments</a>, <a href="http://www.dalkescientific.com/Python/PyRSS2Gen.html" target="_blank">PyRSS2Gen</a>, <a href="http://misaka.61924.nl/" target="_blank">Misaka</a>, <a href="http://www.sqlalchemy.org/" target="_blank">SQLAchemy</a>.</p>
 	<p>Driven by <a href="http://www.linode.com/?r=c310ce994b74518d2c516790e3dfe21f0295a7f4" target="_blank">Linode</a>(MySQL) & <a href="http://www.heroku.com/" target="_blank">Heroku</a>.</p>
@@ -31,7 +45,7 @@ rel="alternate" type="application/rss+xml" title="{{ escape(handler.settings['ti
 		<p>Time costs: {{ info['intv'] }}. Current GMT timestamp: {{ info['times'] }}.</p>
 	</div>
 	<div class="right">
-		v1.0b - <a href="/login">LOGIN</a>
+		v1.1b - <a href="/login">ADMIN</a>
 	</div>
 </div>
 </div>

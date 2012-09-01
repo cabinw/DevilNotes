@@ -1,21 +1,19 @@
-{% extends '../wrapper.html' %}
+{% extends './admin.html' %}
 
-{% block content %}
+{% block inside %}
 
 <div id="admin">
 	<div class="links">
-		<table>
+		<form method="post" action=""><table>
 			<tr>
-				<th>ID</th>
-				<th>Name</th>
-				<th>URL</th>
+				<td class="ar">Name:</td>
+				<td><input type="text" name="name" /></td>
+				<td class="ar">URL:</td>
+				<td><input type="text" name="url" /></td>
+				<td>{{ xsrf_form_html() }}</td>
+				<td><input type="submit" value="Add" /></td>
 			</tr>
-			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
-			</tr>
-		</table>
+		</table></form>
 	</div>
 </div>
 
