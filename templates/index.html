@@ -3,21 +3,25 @@
 {% block content %}
 
 <div id="articles">
-	{% for item in items %}
+	{% for item in items['index'] %}
 	<div class="article clearfix">
 		<div class="content left">
-			<div class="title">
+			<h2 class="title">
 				<a href="/p/{{ item['id'] }}">{{ item['title'] }}</a>
-			</div>
+			</h2>
 			<div class="show">
 				{{ item['content'] }}
+				<p>
+					<a href="/p/{{ item['id'] }}">Read more ...</a>
+				</p>
 			</div>
 		</div>
 		<div class="sidebar right">
-			<div class="info">
+			<div class="inside">
 				<ul>
-					<li>{{ timesFormat(item['id']) }}</li>
-					{% if isAdmin %}
+					<li>{{ m['timesFormatDate'](item['id']) }}</li>
+					<li>{{ m['timesFormatTime'](item['id']) }}</li>
+					{% if m['isAdmin']() %}
 						<li><a href="/admin/edit/{{ item['id'] }}">EDIT</a></li>
 					{% end %}
 				</ul>
@@ -38,7 +42,7 @@
 				{% end %}
 			</div>
 		{% end %}
-		{% if isPagedEnough %}
+		{% if items['isPagedEnough'] %}
 			<div class="right">
 				<a href="/page/{{ plus(page) }}">Next -></a>
 			</div>
@@ -50,7 +54,7 @@
 	<ul class="clearfix">
 	{% for link in links %}
 		<li class="left">
-			<a href="{{ link['url'] }}" target="_blank">{{ link['name'] }}</a>
+			<a href="{{ link.url }}" target="_blank">{{ link.name }}</a>
 		</li>
 	{% end %}
 	<ul>

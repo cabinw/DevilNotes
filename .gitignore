@@ -1,4 +1,3 @@
 *.pyc
-tool/git.sh
-blog/
+tools/git.sh
 config.py

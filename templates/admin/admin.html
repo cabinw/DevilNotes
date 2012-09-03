@@ -4,12 +4,13 @@
 
 <div id="panel" class="clearfix">
 	<div class="left">
+		{% block inside %}{% end %}
+	</div>
+	<div class="right inside">
 		<ul>
 			<li><a href="/admin/add">NEW POST</a></li>
+			<li><a href="/logout">LOGOUT</a></li>
 		</ul>
-	</div>
-	<div class="right">
-		{% block inside %}{% end %}
 	</div>
 </div>
 

@@ -51,7 +51,7 @@ pre {
 	overflow-x: scroll;
 }
 strong {
-	border-bottom: 2px solid #268785;
+	border-bottom: 2px solid #ddd;
 }
 
 /* General */
@@ -85,6 +85,28 @@ body {
 table .ar {
 	text-align: right;
 }
+.inside {
+	margin: 0 0 25px;
+	border-top: 3px solid #eee;
+	background: #fafafa;
+	padding: 12px 12px 12px 0;
+	color: #aaa;
+	word-wrap: break-word;
+	word-break: break-all;
+	overflow: hidden;
+}
+.inside ul {
+	margin: 0;
+}
+.inside a {
+	color: #aaa;
+	border-bottom: 2px solid #eee;
+}
+.inside h3 {
+	padding: 0 0 8px 18px;
+	border-bottom: 3px dashed #eee;
+	margin: 0 0 10px 0;
+}
 
 /* Detail */
 #wrapper {
@@ -112,65 +134,54 @@ table .ar {
 
 #sidebar {
 	width: 20%;
-	border-right: 2px dashed #eee;
-	padding: 0 3% 0 0;
+	margin-top: 27px;
 }
-#sidebar .inside {
-	margin: 27px 0 25px;
-	border-top: 3px solid #eee;
-	background: #fafafa;
-	padding: 12px 12px 12px 0;
-	color: #aaa;
+#sidebar li.dsq-widget-item {
+	margin-left: 24px
 }
 
 #content {
+	border-left: 2px dashed #eee;
 	width: 74%;
-	margin: 0 0 25px;
-	padding: 15px 0 15px;
+	margin: 27px 0 25px 0;
+	padding: 0 0 15px 3%;
 }
-#content .article, #article {
+#content .article {
 	border-bottom: 3px solid #eee;
 	padding-bottom: 25px;
 	margin-bottom: 25px;
-}
-#content .article .sidebar, #article .sidebar, #panel .left {
-	color: #aaa;
-	background: #fafafa;
-	padding: 12px 0 12px 12px;
-	margin: 12px 0 0;
-	border-top: 3px solid #eee;
-}
-#content .article .sidebar ul, #article .sidebar ul, #panel .left ul, #sidebar .inside ul {
-	margin: 0;
 }
 #content .article .content .title, #article .content .title {
 	font-size: 24px;
 	padding-bottom: 18px;
 }
-#content .article .sidebar a, #article .sidebar a, #sidebar .inside a {
-	color: #aaa;
-	border-bottom: 2px solid #eee;
-}
-#content .article .info, #article .info {
-
-}
 #content .article .content, #article .content {
 	width: 70%;
-	margin: 12px 0 30px;
+	margin: 0 0 30px;
 	border-right: 2px dashed #eee;
 	padding-right: 3%;
 }
 #content .sidebar {
-	width: 22%;
+	width: 23%;
 }
 
+#article, #sidebar {
+	padding-bottom: 25px;
+	margin-bottom: 25px;
+}
 #article .title {
 }
 #article .content {
 }
+#article .comments {
+	border-top: 3px solid #EEE;
+	padding: 30px 0 0 0;
+	margin: 50px 0 0 0;
+}
 
 #footer {
-	padding: 15px 0 25px;
+	border-top: 3px solid #EEE;
+	padding: 25px 0 25px;
 }
 #footer p {
 	line-height: 24px;
@@ -204,16 +215,16 @@ table .ar {
 }
 
 #panel .left {
-	width: 230px;
+	width: 70%;
 }
 #panel .right {
-	width: 580px;
+	width: 20%;
 }
-#panel .right .tcontent {
+#panel .left .tcontent {
 	width: 450px;
-	height: 200px;
+	height: 1024px;
 }
-#panel .right table {
+#panel .left table {
 	margin-top: 18px;
 }
 

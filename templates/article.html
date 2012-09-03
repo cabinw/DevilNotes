@@ -4,19 +4,52 @@
 
 <div id="article" class="clearfix single">
 	<div class="content left">
-		<div class="title">
+		<h2 class="title">
 			<a href="/p/{{ item['id'] }}">{{ item['title'] }}</a>
-		</div>
+		</h2>
 		<div class="show">
 			{{ item['content'] }}
 		</div>
+		<div class="comments">
+	        <div id="disqus_thread"></div>
+	        <script type="text/javascript">
+	            var disqus_shortname = 'rainmoe';
+				var disqus_identifier = 'dn-{{ item['id'] }}';
+				var disqus_title = '{{ item['title'] }}';
+				var disqus_url = '{{ escape(handler.settings["url"]) }}p/{{ item['id'] }}';
+
+	            (function() {
+	                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	                dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+	                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	            })();
+	        </script>
+	        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+		</div>
 	</div>
 	<div class="sidebar right">
-		<div class="info">
+		<div class="inside">
 			<ul>
-				<li>{{ timesFormat(item['id']) }}</li>
-				{% if isAdmin %}
+				<li>{{ m['timesFormatDate'](item['id']) }}</li>
+				<li>{{ m['timesFormatTime'](item['id']) }}</li>
+				{% if m['isAdmin']() %}
 					<li><a href="/admin/edit/{{ item['id'] }}">EDIT</a></li>
+				{% end %}
+				<li>{{ escape(handler.settings["url"]) }}p/{{ item['id'] }}</li>
+			</ul>
+		</div>
+		<div class="inside">
+			<h3>Tweets:</h3>
+			<ul id="tweets">
+				<script type="text/javascript" src="http://soul.phpfogapp.com/tweets_api/"></script>
+			</ul>
+		</div>
+		<div class="inside">
+			<h3>New Posts:</h3>
+			<ul>
+				{% for sp in m['sidebar_newposts']() %}
+					<li><a href="/p/{{ sp.times }}">{{ sp.title }}</a></li>
 				{% end %}
 			</ul>
 		</div>

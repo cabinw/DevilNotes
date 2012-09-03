@@ -39,6 +39,7 @@ class Application(tornado.web.Application):
             (r"/rss[/]*", pRSS),
             (r"/feed[/]*", pRSS),
             (r"/login[/]*", pLogin),
+            (r"/logout[/]*", pLoginOut),
             (r"/admin/links[/]*", pAdminLinks),
             (r"/admin/add[/]*", pAdminArticleAdd),
             (r"/admin/edit/(\d+)[/]*", pAdminArticleEdit),
@@ -69,28 +70,44 @@ class mPosts(mBase):
     id = sa.Column(sa.Integer, primary_key = True, autoincrement = True)
     title = sa.Column(sa.String(64))
     content = sa.Column(sa.Text)
-    times = sa.Column(sa.Integer(12), unique=True)
+    times = sa.Column(sa.Integer(12), unique=True) #index
     
     def __init__(self, title, content, times):
         self.title = title
         self.content = content
         self.times = times
 
-class mComments(mBase):
-    __tablename__ = 'dn_comments'
+class mPostsMeta(mBase):
+    __tablename__ = 'dn_posts_meta'
     __table_args__ = {
         'mysql_charset': 'utf8',
     }
     
     id = sa.Column(sa.Integer, primary_key = True, autoincrement = True)
-    user = sa.Column(sa.String(64))
-    comment = sa.Column(sa.Text)
-    times = sa.Column(sa.Integer(12), unique=True)
+    pid = sa.Column(sa.Integer, index=True) #index
+    name = sa.Column(sa.String(12), index=True) #index
+    value = sa.Column(sa.Text)
     
-    def __init__(self, user, comment, times):
-        self.user = user
-        self.comment = comment
-        self.times = times
+    def __init__(self, pid, name, value):
+        self.pid = pid
+        self.name = name
+        self.value = value
+
+# class mComments(mBase):
+#     __tablename__ = 'dn_comments'
+#     __table_args__ = {
+#         'mysql_charset': 'utf8',
+#     }
+#     
+#     id = sa.Column(sa.Integer, primary_key = True, autoincrement = True)
+#     user = sa.Column(sa.String(64), index=True) #index
+#     comment = sa.Column(sa.Text)
+#     times = sa.Column(sa.Integer(12), index=True) #index
+#     
+#     def __init__(self, user, comment, times):
+#         self.user = user
+#         self.comment = comment
+#         self.times = times
 
 class mLinks(mBase):
     __tablename__ = 'dn_links'
@@ -113,7 +130,7 @@ class mOptions(mBase):
     }
     
     id = sa.Column(sa.Integer, primary_key = True, autoincrement = True)
-    name = sa.Column(sa.String(64))
+    name = sa.Column(sa.String(12), index=True) #index
     value = sa.Column(sa.Text)
     
     def __init__(self, name, value):
@@ -123,18 +140,33 @@ class mOptions(mBase):
 class blog():
     @staticmethod
     def readIndex(sets, page = 1):
+        def shorted(data):
+            res = ''
+            count = 0
+            for i in data.splitlines():
+                count += 1
+                if count>2:
+                    break
+                res += i
+            return res
         limit = sets['paged']
         page = int(page)
         index = []
-        if page == -1:
-            limit = 10
         count = db.query(mPosts).count()
-        tmp = db.query(mPosts).order_by(sa.desc(mPosts.times)).offset((page-1)*sets['paged']).limit(limit)
+        if page == -1:
+            tmp = db.query(mPosts).order_by(sa.desc(mPosts.times)).limit(12)
+        else:
+            tmp = db.query(mPosts).order_by(sa.desc(mPosts.times)).offset((page-1)*sets['paged']).limit(limit)
         for i in tmp:
-            content = md.html(i.content, extensions=md.EXT_STRIKETHROUGH)
+            content = md.html(shorted(i.content), extensions=md.EXT_STRIKETHROUGH)
             index.append({'id': i.times, 'title': i.title, 'content': content})
         return {'index': index, 'isPagedEnough': count>page*sets['paged'] and page>0}
-    
+
+    @staticmethod
+    def readList():
+        tmp = db.query(mPosts.times, mPosts.title).order_by(sa.desc(mPosts.times)).limit(12)
+        return tmp
+
     @staticmethod
     def readArticle(pid, isPure = False):
         article = {'id': pid, 'title': '', 'content': ''}
@@ -158,19 +190,19 @@ class blog():
         tmp.content = new['content']
         db.commit()
 
-    @classmethod
-    def outputRSS(cls, sets):
-        tmp = cls.readIndex(sets, -1)
-        articles = tmp['index']
+    @staticmethod
+    def outputRSS(sets):
+        articles = db.query(mPosts).order_by(sa.desc(mPosts.times)).limit(12)
         items = []
         for article in articles:
-            url = sets['url'] + 'p/' + str(article['id'])
+            content = md.html(article.content, extensions=md.EXT_STRIKETHROUGH)
+            url = sets['url'] + 'p/' + str(article.times)
             items.append(PyRSS2Gen.RSSItem(
-                title = article['title'],
+                title = article.title,
                 link = url,
-                description = article['content'],
+                description = content,
                 guid = PyRSS2Gen.Guid(url),
-                pubDate = datetime.datetime.fromtimestamp(float(article['id'])),
+                pubDate = datetime.datetime.fromtimestamp(float(article.times)),
             ))
         rss = PyRSS2Gen.RSS2(
             title = sets['title'],
@@ -180,6 +212,11 @@ class blog():
             items = items
         ).to_xml()
         return rss
+    
+    @staticmethod
+    def readLinks():
+        tmp = db.query(mLinks)
+        return tmp
 
 class pBase(tornado.web.RequestHandler):
     def on_finish(self):
@@ -205,8 +242,11 @@ class pBase(tornado.web.RequestHandler):
     def minus(self, num):
         return int(num) - 1
     
-    def timesFormat(self, times):
+    def timesFormatDate(self, times):
         return datetime.datetime.fromtimestamp(float(times)+3600*8).date()
+
+    def timesFormatTime(self, times):
+        return datetime.datetime.fromtimestamp(float(times)+3600*8).time()
     
     def userCurrent(self):
         user = self.get_secure_cookie("login")
@@ -233,6 +273,20 @@ class pBase(tornado.web.RequestHandler):
     def checkAdmin(self):
         if not self.isAdmin():
             raise tornado.web.HTTPError(404)
+            
+    def method(self, stime):
+        m = {}
+        
+        intv = str((time.time() - stime)*1000) + ' ms'
+        m['info'] = {'intv': intv, 'times': self.getTimes()}
+        m['timesFormatDate'] = self.timesFormatDate
+        m['timesFormatTime'] = self.timesFormatTime
+        m['plus'] = self.plus
+        m['minus'] = self.minus
+        m['isAdmin'] = self.isAdmin
+        m['sidebar_newposts'] = blog.readList
+        
+        return m
 
 class pError(pBase):
     def __init__(self, application, request, status_code):
@@ -240,27 +294,22 @@ class pError(pBase):
         self.set_status(status_code)
     
     def get_error_html(self, status_code, **kwargs):
+        stime = time.time()
         if (status_code == 404):
             error = 'Page not found.'
         elif (status_code == 405):
             error = 'Temporary not avaliable.'
         else:
             error = 'Unexpected problem.'
-        info = {'intv': '-', 'times': self.getTimes()}
-        return self.render_string("error.html", info = info, error = error)
+        return self.render_string("error.html", m = self.method(stime), error = error)
 
 class pIndex(pBase):
     def get(self, page = 1):
         stime = time.time()
         items = blog.readIndex(self.application.settings, page)
-        intv = str((time.time() - stime)*1000) + ' ms'
-        info = {'intv': intv, 'times': self.getTimes()}
-        handle = open(self.application.settings['folder_blog'] + 'option/links.txt')
-        links = eval(handle.read())
-        handle.close()
-        self.render("index.html", items = items['index'], info = info, page = int(page),
-            plus = self.plus, minus = self.minus, isPagedEnough = items['isPagedEnough'],
-            timesFormat = self.timesFormat, links = links, isAdmin = self.isAdmin
+        links = blog.readLinks()
+        self.render("index.html", items = items, page = int(page),
+            links = links, m = self.method(stime)
         )
 
 class pArticle(pBase):
@@ -269,14 +318,14 @@ class pArticle(pBase):
         item = blog.readArticle(pid)
         intv = str((time.time() - stime)*1000) + ' ms'
         info = {'intv': intv, 'times': self.getTimes()}
-        self.render("article.html", item = item, info = info, timesFormat = self.timesFormat,
-            isAdmin = self.isAdmin
+        self.render("article.html", item = item,
+            m = self.method(stime)
         )
 
 class pOS(pBase):
     def get(self):
-        info = {'intv': 0, 'times': self.getTimes()}
-        self.render("os.html", items = os.environ, info = info)
+        stime = time.time()
+        self.render("os.html", items = os.environ, m = self.method(stime))
 
 class pRSS(pBase):
     def get(self):
@@ -288,8 +337,8 @@ class pLogin(pBase):
         if self.isAdmin():
             self.redirect('/admin/add')
         else:
-            info = {'intv': 0, 'times': self.getTimes()}
-            self.render("login.html", info = info, isLogin = self.isLogin)
+            stime = time.time()
+            self.render("login.html", m = self.method(stime), isLogin = self.isLogin)
         
     def post(self):
         username = self.get_argument("username")
@@ -300,18 +349,24 @@ class pLogin(pBase):
         else:
             self.redirect('/login')
 
+class pLoginOut(pBase):
+    def get(self):
+        self.clear_cookie('login')
+        self.redirect('/login')
+
 class pAdminLinks(pBase):
     def get(self):
+        stime = time.time()
         self.checkAdmin()
         links = dn_Links().select().order(('id', 'asc'))
         print links
-        self.render("admin/links.html", links = links)
+        self.render("admin/links.html", links = links, m = self.method(stime))
 
 class pAdminArticleAdd(pBase):
     def get(self):
+        stime = time.time()
         self.checkAdmin()
-        info = {'intv': 0, 'times': self.getTimes()}
-        self.render("admin/article_add.html", info = info)
+        self.render("admin/article_add.html", m = self.method(stime))
         
     def post(self):
         self.checkAdmin()
@@ -327,10 +382,10 @@ class pAdminArticleEdit(pBase):
         None
         
     def get(self, pid):
+        stime = time.time()
         self.checkAdmin()
         item = blog.readArticle(pid, True)
-        info = {'intv': 0, 'times': self.getTimes()}
-        self.render("admin/article_edit.html", info = info, item = item)
+        self.render("admin/article_edit.html", m = self.method(stime), item = item)
         
     def post(self, pid):
         self.checkAdmin()
