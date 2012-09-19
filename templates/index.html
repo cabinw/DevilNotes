@@ -19,8 +19,8 @@
 		<div class="sidebar right">
 			<div class="inside">
 				<ul>
-					<li>{{ m['timesFormatDate'](item['id']) }}</li>
-					<li>{{ m['timesFormatTime'](item['id']) }}</li>
+					<li>{{ handler.timesFormatDate(item['id']) }}</li>
+					<li>{{ handler.timesFormatTime(item['id']) }}</li>
 					<li><a href="{{ escape(handler.settings["url"]) }}p/{{ item['id'] }}#disqus_thread">Loading ..</a></li>
 				</ul>
 			</div>

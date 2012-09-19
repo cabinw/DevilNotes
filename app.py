@@ -266,6 +266,8 @@ class blog():
         db.commit()
 
 class pBase(tornado.web.RequestHandler):
+    stime = 0
+    
     def on_finish(self):
         None
     
@@ -320,59 +322,48 @@ class pBase(tornado.web.RequestHandler):
     def checkAdmin(self):
         if not self.isAdmin():
             raise tornado.web.HTTPError(404)
-            
-    def method(self, stime):
-        m = {}
         
-        intv = str((time.time() - stime)*1000) + ' ms'
-        m['info'] = {'intv': intv, 'times': self.getTimes()}
-        m['timesFormatDate'] = self.timesFormatDate
-        m['timesFormatTime'] = self.timesFormatTime
-        m['plus'] = self.plus
-        m['minus'] = self.minus
-        m['isAdmin'] = self.isAdmin
-        m['sidebar_newposts'] = blog.readList
+    def timeCost(self):
+        return str((time.time() - self.stime)*1000) + ' ms'
         
-        return m
-
 class pError(pBase):
     def __init__(self, application, request, status_code):
         tornado.web.RequestHandler.__init__(self, application, request)
         self.set_status(status_code)
     
     def get_error_html(self, status_code, **kwargs):
-        stime = time.time()
+        self.stime = time.time()
         if (status_code == 404):
             error = 'Page not found.'
         elif (status_code == 405):
             error = 'Temporary not avaliable.'
         else:
             error = 'Unexpected problem.'
-        return self.render_string("error.html", m = self.method(stime), error = error)
+        return self.render_string("error.html", error = error)
 
 class pIndex(pBase):
     def get(self, page = 1):
-        stime = time.time()
+        self.stime = time.time()
         items = blog.readIndex(self.application.settings, page)
         links = blog.readLinks(-1, True)
         self.render("index.html", items = items, page = int(page),
-            links = links, m = self.method(stime)
+            links = links
         )
 
 class pArticle(pBase):
     def get(self, pid):
-        stime = time.time()
+        self.stime = time.time()
         item = blog.readArticle(pid)
         intv = str((time.time() - stime)*1000) + ' ms'
         info = {'intv': intv, 'times': self.getTimes()}
         self.render("article.html", item = item,
-            m = self.method(stime)
+            timec = self.timeCost(stime)
         )
 
 class pOS(pBase):
     def get(self):
-        stime = time.time()
-        self.render("os.html", items = os.environ, m = self.method(stime))
+        self.stime = time.time()
+        self.render("os.html", items = os.environ)
 
 class pRSS(pBase):
     def get(self):
@@ -384,8 +375,8 @@ class pLogin(pBase):
         if self.isAdmin():
             self.redirect('/admin/edit')
         else:
-            stime = time.time()
-            self.render("login.html", m = self.method(stime), isLogin = self.isLogin)
+            self.stime = time.time()
+            self.render("login.html", isLogin = self.isLogin)
         
     def post(self):
         username = self.get_argument("username")
@@ -403,13 +394,13 @@ class pLoginOut(pBase):
 
 class pAdminLinks(pBase):
     def get(self, lid = -1):
-        stime = time.time()
+        self.stime = time.time()
         self.checkAdmin()
         link = False
         if lid != -1:
             link = blog.readLinks(lid)
         links = blog.readLinks()
-        self.render("admin/links.html", links = links, m = self.method(stime),
+        self.render("admin/links.html", links = links,
                     lid = lid, link = link)
         
     def post(self, lid = -1):
@@ -425,9 +416,9 @@ class pAdminLinks(pBase):
 
 class pAdminArticleAdd(pBase):
     def get(self):
-        stime = time.time()
+        self.stime = time.time()
         self.checkAdmin()
-        self.render("admin/article_add.html", m = self.method(stime))
+        self.render("admin/article_add.html")
         
     def post(self):
         self.checkAdmin()
@@ -438,17 +429,17 @@ class pAdminArticleAdd(pBase):
         
 class pAdminArticleList(pBase):
     def get(self):
-        stime = time.time()
+        self.stime = time.time()
         self.checkAdmin()
         items = blog.readList(-1)
-        self.render("admin/article_list.html", m = self.method(stime), items = items)
+        self.render("admin/article_list.html", items = items)
 
 class pAdminArticleEdit(pBase): 
     def get(self, pid):
-        stime = time.time()
+        self.stime = time.time()
         self.checkAdmin()
         item = blog.readArticle(pid, True)
-        self.render("admin/article_edit.html", m = self.method(stime), item = item)
+        self.render("admin/article_edit.html", item = item)
         
     def post(self, pid):
         self.checkAdmin()

@@ -33,9 +33,9 @@
 	<div class="sidebar right">
 		<div class="inside">
 			<ul>
-				<li>{{ m['timesFormatDate'](item['id']) }}</li>
-				<li>{{ m['timesFormatTime'](item['id']) }}</li>
-				{% if m['isAdmin']() %}
+				<li>{{ handler.timesFormatDate(item['id']) }}</li>
+				<li>{{ handler.timesFormatTime(item['id']) }}</li>
+				{% if handler.isAdmin() %}
 					<li><a href="/admin/edit/{{ item['id'] }}">EDIT</a></li>
 				{% end %}
 				<li>{{ escape(handler.settings["url"]) }}p/{{ item['id'] }}</li>
@@ -50,7 +50,7 @@
 		<div class="inside">
 			<h3>New Posts:</h3>
 			<ul>
-				{% for sp in m['sidebar_newposts']() %}
+				{% for sp in handler.sidebar_newposts() %}
 					<li><a href="/p/{{ sp.times }}">{{ sp.title }}</a></li>
 				{% end %}
 			</ul>
