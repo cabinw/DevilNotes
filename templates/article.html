@@ -50,7 +50,7 @@
 		<div class="inside">
 			<h3>New Posts:</h3>
 			<ul>
-				{% for sp in handler.sidebar_newposts() %}
+				{% for sp in handler.sidebarNewposts()() %}
 					<li><a href="/p/{{ sp.times }}">{{ sp.title }}</a></li>
 				{% end %}
 			</ul>

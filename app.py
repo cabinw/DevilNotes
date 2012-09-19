@@ -326,6 +326,9 @@ class pBase(tornado.web.RequestHandler):
     def timeCost(self):
         return str((time.time() - self.stime)*1000) + ' ms'
         
+    def sidebarNewposts(self):
+        return blog.readList
+        
 class pError(pBase):
     def __init__(self, application, request, status_code):
         tornado.web.RequestHandler.__init__(self, application, request)
@@ -354,13 +357,10 @@ class pArticle(pBase):
     def get(self, pid):
         self.stime = time.time()
         item = blog.readArticle(pid)
-        self.render("article.html", item = item,
-            timec = self.timeCost(stime)
-        )
+        self.render("article.html", item = item)
 
 class pOS(pBase):
     def get(self):
-        self.stime = time.time()
         self.render("os.html", items = os.environ)
 
 class pRSS(pBase):
