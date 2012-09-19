@@ -1,0 +1,24 @@
+{% extends './admin.html' %}
+
+{% block inside %}
+
+<div id="admin">
+	<div class="article_add">
+		<table>
+			<tr>
+				<th>Times</th>
+				<th>Title</th>
+				<th>Control</th>
+			</tr>
+			{% for sp in items %}
+				<tr>
+					<td>{{ sp.times }}</td>
+					<td>{{ sp.title }}</td>
+					<td><a href="/admin/edit/{{ sp.times }}">EDIT</a></td>
+				</tr>
+			{% end %}
+		</table>
+	</div>
+</div>
+
+{% end %}

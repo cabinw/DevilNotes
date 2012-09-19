@@ -1,13 +1,14 @@
 <html lang="zh-cn">
 <head>
 <!-- Head -->
-<title>{{ escape(handler.settings['title']) }}</title>
+<title>{% block title %}{{ escape(handler.settings['title']) }}{% end %}</title>
 <link
 rel="alternate" type="application/rss+xml" title="{{ escape(handler.settings['title']) }}" href="{{ escape(handler.settings['url']) }}feed" />
 <link rel="stylesheet" type="text/css" href="{{ static_url('base.css') }}" />
 <script type="text/javascript" src="{{ static_url('js/jquery-1.8.0.min.js') }}"></script>
 <!--<script type="text/javascript" src="{{ static_url('js/json2.js') }}"></script>-->
 <script type="text/javascript" src="{{ static_url('js/base.js') }}"></script>
+<link rel="shortcut icon" href="{{ static_url('favicon.ico') }}" />
 <!-- Head -->
 </head>
 <body>
@@ -28,9 +29,9 @@ rel="alternate" type="application/rss+xml" title="{{ escape(handler.settings['ti
 				<li>Welcome, human or robot. I am 邪罗刹.</li>
 			</ul>
 		</div>
-		<div class="inside">
+		<div id="recent_comments" class="inside">
 			<h3>Recent Comments:</h3>
-			<script type="text/javascript" src="http://rainmoe.disqus.com/recent_comments_widget.js?num_items=12&hide_avatars=0&avatar_size=24&excerpt_length=20"></script>
+			<script type="text/javascript" src="http://{{ handler.settings["disqus"] }}.disqus.com/recent_comments_widget.js?num_items=12&hide_avatars=0&avatar_size=24&excerpt_length=20"></script>
 		</div>	
 	</div>
 	{% end %}
@@ -38,21 +39,35 @@ rel="alternate" type="application/rss+xml" title="{{ escape(handler.settings['ti
 		{% block content %}{% end %}
 	</div>
 </div>
+<div class="ad">
+	{% module Template("ad.html") %}
+</div>
 <div id="footer" class="clearfix">
-	<p>DevilNotes, created by <a href="http://www.rainmoe.com/" rel="nofollow">邪罗刹</a>. </p>
+	<p>DevilNotes, Copyright (c) 2012, <a href="http://www.rainmoe.com/" rel="nofollow">邪罗刹</a>.</p>
 	<p>Open source. Repo on Github: <a href="https://github.com/Evlos/DevilNotes" target="_blank">https://github.com/Evlos/DevilNotes</a>.</p>
-	<p>Supported by <a href="http://www.python.org/" target="_blank">Python</a>, <a href="http://www.tornadoweb.org/" target="_blank">Tornado</a>, <a href="http://pygments.org/" target="_blank">Pygments</a>, <a href="http://www.dalkescientific.com/Python/PyRSS2Gen.html" target="_blank">PyRSS2Gen</a>, <a href="http://misaka.61924.nl/" target="_blank">Misaka</a> & <a href="http://www.sqlalchemy.org/" target="_blank">SQLAchemy</a>.</p>
+	<p>Supported by <a href="http://www.python.org/" target="_blank">Python</a>, <a href="http://www.tornadoweb.org/" target="_blank">Tornado</a>, <!--<a href="http://pygments.org/" target="_blank">Pygments</a>, --><a href="http://www.dalkescientific.com/Python/PyRSS2Gen.html" target="_blank">PyRSS2Gen</a>, <a href="http://misaka.61924.nl/" target="_blank">Misaka</a> & <a href="http://www.sqlalchemy.org/" target="_blank">SQLAchemy</a>.</p>
 	<p>Driven by <a href="http://www.linode.com/?r=c310ce994b74518d2c516790e3dfe21f0295a7f4" target="_blank">Linode</a>(MySQL) & <a href="http://www.heroku.com/" target="_blank">Heroku</a>.</p>
-	<p>RSS url: <a href="{{ escape(handler.settings["url"]) }}feed">{{ escape(handler.settings["url"]) }}feed</a>, subscribe via <a href="https://www.google.com/reader/view/feed/{{ escape(handler.settings["url"]) }}feed" target="_blank">Google Reader</a></p>
+	<p>RSS url: <a href="{{ escape(handler.settings["url"]) }}feed">{{ escape(handler.settings["url"]) }}feed</a>, subscribe via <a href="https://www.google.com/reader/view/feed/{{ escape(handler.settings["url"]) }}feed" target="_blank">Google Reader</a>.</p>
+	<p>License: <a href="http://opensource.org/licenses/bsd-license.php" target="_blank">http://opensource.org/licenses/bsd-license.php</a>.</p>
 	<div class="left">
 		<p>Time costs: {{ m['info']['intv'] }}. Current GMT timestamp: {{ m['info']['times'] }}.</p>
 	</div>
 	<div class="right">
-		v1.2b - <a href="/login">ADMIN</a>
+		v1.2b+ - <a href="/login">ADMIN</a>
 	</div>
 </div>
 </div>
 <!-- Body -->
+<script type="text/javascript">
+var disqus_shortname = '{{ handler.settings["disqus"] }}';
+
+(function () {
+	var s = document.createElement('script'); s.async = true;
+	s.type = 'text/javascript';
+	s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+	(document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
 {% module Template("count.html") %}
 </body>
 </html>

@@ -1,5 +1,7 @@
 {% extends 'wrapper.html' %}
 
+{% block title %}{{ item['title'] }} - {{ escape(handler.settings['title']) }}{% end %}
+
 {% block content %}
 
 <div id="article" class="clearfix single">
@@ -13,7 +15,7 @@
 		<div class="comments">
 	        <div id="disqus_thread"></div>
 	        <script type="text/javascript">
-	            var disqus_shortname = 'rainmoe';
+	            var disqus_shortname = '{{ handler.settings["disqus"] }}';
 				var disqus_identifier = 'dn-{{ item['id'] }}';
 				var disqus_title = '{{ item['title'] }}';
 				var disqus_url = '{{ escape(handler.settings["url"]) }}p/{{ item['id'] }}';

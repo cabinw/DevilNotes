@@ -11,7 +11,7 @@
 			</h2>
 			<div class="show">
 				{{ item['content'] }}
-				<p>
+				<p class="readmore">
 					<a href="/p/{{ item['id'] }}">Read more ...</a>
 				</p>
 			</div>
@@ -21,9 +21,7 @@
 				<ul>
 					<li>{{ m['timesFormatDate'](item['id']) }}</li>
 					<li>{{ m['timesFormatTime'](item['id']) }}</li>
-					{% if m['isAdmin']() %}
-						<li><a href="/admin/edit/{{ item['id'] }}">EDIT</a></li>
-					{% end %}
+					<li><a href="{{ escape(handler.settings["url"]) }}p/{{ item['id'] }}#disqus_thread">Loading ..</a></li>
 				</ul>
 			</div>
 		</div>
@@ -38,13 +36,13 @@
 				{% if page == 2 %}
 					<a href="/"><- Prev</a>
 				{% else %}
-					<a href="/page/{{ minus(page) }}"><- Prev</a>
+					<a href="/page/{{ handler.minus(page) }}"><- Prev</a>
 				{% end %}
 			</div>
 		{% end %}
 		{% if items['isPagedEnough'] %}
 			<div class="right">
-				<a href="/page/{{ plus(page) }}">Next -></a>
+				<a href="/page/{{ handler.plus(page) }}">Next -></a>
 			</div>
 		{% end %}
 	</div>

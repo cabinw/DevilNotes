@@ -1,6 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+# Copyright (c) 2012, 邪罗刹
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+# 
+# Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+# Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# http://opensource.org/licenses/bsd-license.php
+
 import os.path
 import re
 import time
@@ -33,16 +44,23 @@ class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
             (r"/", pIndex),
+            
             (r"/page/(\d+)[/]*", pIndex),
-            #(r"/os[/]*", pOS),
             (r"/p/(\d+)[/]*", pArticle),
+            
             (r"/rss[/]*", pRSS),
             (r"/feed[/]*", pRSS),
+            
             (r"/login[/]*", pLogin),
             (r"/logout[/]*", pLoginOut),
+            
             (r"/admin/links[/]*", pAdminLinks),
+            (r"/admin/links/(\d+)[/]*", pAdminLinks),
             (r"/admin/add[/]*", pAdminArticleAdd),
+            (r"/admin/edit[/]*", pAdminArticleList),
             (r"/admin/edit/(\d+)[/]*", pAdminArticleEdit),
+            
+            #(r"/os[/]*", pOS),
         ]
         settings = dict(
             template_path = os.path.join("templates"),
@@ -55,6 +73,7 @@ class Application(tornado.web.Application):
             folder_blog = './blog/',
             url = config['url'],
             paged = config['paged'],
+            disqus = config['disqus_name'],
         )
         tornado.web.Application.__init__(self, handlers, **settings)
         tornado.web.ErrorHandler = pError
@@ -163,8 +182,11 @@ class blog():
         return {'index': index, 'isPagedEnough': count>page*sets['paged'] and page>0}
 
     @staticmethod
-    def readList():
-        tmp = db.query(mPosts.times, mPosts.title).order_by(sa.desc(mPosts.times)).limit(12)
+    def readList(limit = 12):
+        if limit == -1:
+            tmp = db.query(mPosts.times, mPosts.title).order_by(sa.desc(mPosts.times))
+        else:
+            tmp = db.query(mPosts.times, mPosts.title).order_by(sa.desc(mPosts.times)).limit(limit)
         return tmp
 
     @staticmethod
@@ -180,7 +202,12 @@ class blog():
         article['title'] = tmp.title
         article['content'] = content
         return article
-
+    
+    @staticmethod
+    def addArticle(new, getTimes):
+        db.add(mPosts(new['title'], new['content'], getTimes()))
+        db.commit()
+    
     @staticmethod
     def updateArticle(pid, new):
         tmp = db.query(mPosts).filter(mPosts.times == pid).first()
@@ -214,9 +241,29 @@ class blog():
         return rss
     
     @staticmethod
-    def readLinks():
-        tmp = db.query(mLinks)
+    def readLinks(lid = -1, filter = False):
+        if lid == -1:
+            if filter:
+                tmp = db.query(mLinks).filter(mLinks.url != '-')
+            else:
+                tmp = db.query(mLinks)
+        else:
+            tmp = db.query(mLinks).filter(mLinks.id == lid).first()
         return tmp
+    
+    @staticmethod
+    def addLink(new):
+        db.add(mLinks(new['name'], new['url']))
+        db.commit()
+    
+    @staticmethod
+    def updateLink(lid, new):
+        tmp = db.query(mLinks).filter(mLinks.id == lid).first()
+        if tmp is None:
+            raise tornado.web.HTTPError(404, "Link not found.")
+        tmp.name = new['name']
+        tmp.url = new['url']
+        db.commit()
 
 class pBase(tornado.web.RequestHandler):
     def on_finish(self):
@@ -307,7 +354,7 @@ class pIndex(pBase):
     def get(self, page = 1):
         stime = time.time()
         items = blog.readIndex(self.application.settings, page)
-        links = blog.readLinks()
+        links = blog.readLinks(-1, True)
         self.render("index.html", items = items, page = int(page),
             links = links, m = self.method(stime)
         )
@@ -335,7 +382,7 @@ class pRSS(pBase):
 class pLogin(pBase):
     def get(self):
         if self.isAdmin():
-            self.redirect('/admin/add')
+            self.redirect('/admin/edit')
         else:
             stime = time.time()
             self.render("login.html", m = self.method(stime), isLogin = self.isLogin)
@@ -355,12 +402,26 @@ class pLoginOut(pBase):
         self.redirect('/login')
 
 class pAdminLinks(pBase):
-    def get(self):
+    def get(self, lid = -1):
         stime = time.time()
         self.checkAdmin()
-        links = dn_Links().select().order(('id', 'asc'))
-        print links
-        self.render("admin/links.html", links = links, m = self.method(stime))
+        link = False
+        if lid != -1:
+            link = blog.readLinks(lid)
+        links = blog.readLinks()
+        self.render("admin/links.html", links = links, m = self.method(stime),
+                    lid = lid, link = link)
+        
+    def post(self, lid = -1):
+        self.checkAdmin()
+        lid = int(lid)
+        name = self.get_argument("name")
+        url = self.get_argument("url")
+        if lid == -1:
+            blog.addLink({'name': name, 'url': url})
+        else:
+            blog.updateLink(lid, {'name': name, 'url': url})
+        self.redirect('/admin/links')
 
 class pAdminArticleAdd(pBase):
     def get(self):
@@ -372,15 +433,17 @@ class pAdminArticleAdd(pBase):
         self.checkAdmin()
         title = self.get_argument("title")
         content = self.get_argument("content")
-        db.add(mPosts(title, content, self.getTimes()))
-        db.commit()
+        blog.addArticle({'title': title, 'content': content}, self.getTimes)
         self.redirect('/')
         
-class pAdminArticleEdit(pBase):
+class pAdminArticleList(pBase):
     def get(self):
+        stime = time.time()
         self.checkAdmin()
-        None
-        
+        items = blog.readList(-1)
+        self.render("admin/article_list.html", m = self.method(stime), items = items)
+
+class pAdminArticleEdit(pBase): 
     def get(self, pid):
         stime = time.time()
         self.checkAdmin()

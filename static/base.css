@@ -38,7 +38,7 @@ li {
 }
 table {
 }
-table tr td {
+table td, table th {
 	padding: 8px 12px;
 }
 pre {
@@ -56,7 +56,7 @@ strong {
 
 /* General */
 body {
-	font-family: '微软雅黑';
+	font-family: 'Open Sans', 'Microsoft Yahei', sans-serif;
 	background: url('images/bg.gif');
 	line-height: 24px;
 }
@@ -82,9 +82,6 @@ body {
 	box-shadow: 0px 0px 6px #888;
 	overflow: hidden;
 }
-table .ar {
-	text-align: right;
-}
 .inside {
 	margin: 0 0 25px;
 	border-top: 3px solid #eee;
@@ -106,6 +103,20 @@ table .ar {
 	padding: 0 0 8px 18px;
 	border-bottom: 3px dashed #eee;
 	margin: 0 0 10px 0;
+}
+.readmore {
+	text-align: right;
+}
+.show h3 {
+	padding: 3px 0 3px 12px;
+	border-left: 3px solid #268785;
+	background: #EEE;
+	margin: 30px 0 10px 0;
+}
+.ad {
+	background: #fafafa;
+	margin: 30px 0;
+	text-align: center;
 }
 
 /* Detail */
@@ -141,10 +152,9 @@ table .ar {
 }
 
 #content {
-	border-left: 2px dashed #eee;
-	width: 74%;
+	width: 77%;
 	margin: 27px 0 25px 0;
-	padding: 0 0 15px 3%;
+	padding: 0 0 15px 0;
 }
 #content .article {
 	border-bottom: 3px solid #eee;
@@ -156,10 +166,8 @@ table .ar {
 	padding-bottom: 18px;
 }
 #content .article .content, #article .content {
-	width: 70%;
+	width: 73%;
 	margin: 0 0 30px;
-	border-right: 2px dashed #eee;
-	padding-right: 3%;
 }
 #content .sidebar {
 	width: 23%;
@@ -180,6 +188,7 @@ table .ar {
 }
 
 #footer {
+	color: #ddd;
 	border-top: 3px solid #EEE;
 	padding: 25px 0 25px;
 }
@@ -198,9 +207,12 @@ table .ar {
 }
 
 #links, #panel, #paged {
-	padding-bottom: 25px;
 	margin-bottom: 15px;
-	border-bottom: 3px dashed #eee;
+}
+#paged {
+	margin-bottom: 35px;
+	border-bottom: 3px solid #EEE;
+	padding: 0 20px 15px;
 }
 #links ul {
 	margin: 0;
@@ -214,18 +226,27 @@ table .ar {
 	width: 118px;
 }
 
-#panel .left {
-	width: 70%;
+#panel .tcontent, #panel .ttext {
+	width: 96%;
+	font-size: 15px;
 }
-#panel .right {
-	width: 20%;
+#panel .tcontent {
+	height: 500px;
 }
-#panel .left .tcontent {
-	width: 450px;
-	height: 1024px;
+#panel .ttext {
 }
-#panel .left table {
+#panel table {
+	width: 100%;
 	margin-top: 18px;
+}
+#panel table .ar {
+	text-align: right;
+	width: 10%;
+}
+#panel table th {
+	text-align: left;
+	color: #268785;
+	background: #fafafa;
 }
 
 /* END */

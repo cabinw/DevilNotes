@@ -2,13 +2,32 @@
 
 {% block content %}
 
-<div id="panel" class="clearfix">
-	<div class="left">
-		{% block inside %}{% end %}
+<div id="panel">
+	{% block inside %}{% end %}
+</div>
+
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	$("#recent_comments").css("display", "none");
+});
+</script>
+
+{% end %}
+
+{% block sidebar %}
+
+<div id="sidebar" class="left">
+	<div class="inside">
+		<h3>Who Am I:</h3>
+		<ul>
+			<li>Welcome, human or robot. I am 邪罗刹.</li>
+		</ul>
 	</div>
-	<div class="right inside">
+	<div class="inside">
 		<ul>
 			<li><a href="/admin/add">NEW POST</a></li>
+			<li><a href="/admin/edit">EDIT POST</a></li>
+			<li><a href="/admin/links">LINKS</a></li>
 			<li><a href="/logout">LOGOUT</a></li>
 		</ul>
 	</div>

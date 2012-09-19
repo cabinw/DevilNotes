@@ -3,17 +3,44 @@
 {% block inside %}
 
 <div id="admin">
-	<div class="links">
-		<form method="post" action=""><table>
+	<div class="article_add">
+		<table>
 			<tr>
-				<td class="ar">Name:</td>
-				<td><input type="text" name="name" /></td>
-				<td class="ar">URL:</td>
-				<td><input type="text" name="url" /></td>
-				<td>{{ xsrf_form_html() }}</td>
-				<td><input type="submit" value="Add" /></td>
+				<th>ID</th>
+				<th>Name</th>
+				<th>URL</th>
+				<th>Control</th>
 			</tr>
-		</table></form>
+			<form method="post" action=""><tr>
+				{% if lid == -1 %}
+					<td>NEW</td>
+					<td><input type="text" name="name" class="ttext" /></td>
+					<td><input type="text" name="url" class="ttext" /></td>
+					<td>
+						{{ xsrf_form_html() }}
+						<input type="hidden" name="lid" value="-1" />
+						<input type="submit" value="Add" />
+					</td>
+				{% else %}
+					<td>{{ lid }}</td>
+					<td><input type="text" name="name" class="ttext" value="{{ link.name }}" /></td>
+					<td><input type="text" name="url" class="ttext" value="{{ link.url }}" /></td>
+					<td>
+						{{ xsrf_form_html() }}
+						<input type="hidden" name="lid" value="{{ lid }}" />
+						<input type="submit" value="Save" />
+					</td>
+				{% end %}
+			</tr></form>
+			{% for sp in links %}
+				<tr>
+					<td>{{ sp.id }}</td>
+					<td>{{ sp.name }}</td>
+					<td>{{ sp.url }}</td>
+					<td><a href="/admin/links/{{ sp.id }}">EDIT</a></td>
+				</tr>
+			{% end %}
+		</table>
 	</div>
 </div>
 
