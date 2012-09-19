@@ -354,8 +354,6 @@ class pArticle(pBase):
     def get(self, pid):
         self.stime = time.time()
         item = blog.readArticle(pid)
-        intv = str((time.time() - stime)*1000) + ' ms'
-        info = {'intv': intv, 'times': self.getTimes()}
         self.render("article.html", item = item,
             timec = self.timeCost(stime)
         )
